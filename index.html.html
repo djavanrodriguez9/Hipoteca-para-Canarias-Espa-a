@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Hipoteca — España & Canarias</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a2e;--ink-soft:#4a4a6a;--ink-muted:#8888aa;
+  --surface:#f7f6f2;--card:#ffffff;
+  --accent:#2d6a4f;--accent-lt:#d8f3dc;
+  --amber:#e07a1f;--amber-lt:#fef3e2;
+  --danger:#c0392b;--danger-lt:#fdecea;
+  --blue:#1e6091;--blue-lt:#e8f4fd;
+  --purple:#6c3483;--purple-lt:#f5eef8;
+  --border:#e4e2dc;
+  --shadow:0 2px 16px rgba(26,26,46,0.07);
+  --radius:12px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;padding:0 0 80px}
+
+/* HEADER */
+header{background:var(--ink);color:#fff;padding:48px 24px 40px;text-align:center}
+header .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:12px}
+header h1{font-family:'DM Serif Display',serif;font-size:clamp(26px,5vw,46px);line-height:1.1;font-weight:400}
+header h1 em{font-style:italic;color:#7ec8a0}
+header p{margin-top:14px;font-size:15px;color:rgba(255,255,255,.55);max-width:520px;margin-left:auto;margin-right:auto;line-height:1.6}
+
+/* NAV TABS */
+.tab-nav{display:flex;background:var(--ink);border-top:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:100}
+.tab-btn{flex:1;padding:14px 8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.tab-btn.active{color:#7ec8a0;border-bottom-color:#7ec8a0}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,.7)}
+
+/* TAB PANELS */
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* WRAPPER */
+.wrapper{max-width:900px;margin:0 auto;padding:0 20px}
+
+/* SECTION CARD */
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 28px 24px;margin-top:20px;box-shadow:var(--shadow)}
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.section-num{width:28px;height:28px;background:var(--ink);color:#fff;border-radius:50%;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:15px;font-weight:600;letter-spacing:-.01em}
+
+/* SLIDER */
+.slider-group{margin-bottom:24px}
+.slider-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.slider-header label{font-size:13px;color:var(--ink-soft);font-weight:500}
+.slider-value{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--accent);letter-spacing:-.02em}
+.slider-value.blue{color:var(--blue)}
+.slider-value.amber{color:var(--amber)}
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--border);outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:0 2px 8px rgba(45,106,79,.35);cursor:pointer;transition:transform .15s}
+input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type="range"].blue-thumb::-webkit-slider-thumb{background:var(--blue);box-shadow:0 2px 8px rgba(30,96,145,.35)}
+input[type="range"].amber-thumb::-webkit-slider-thumb{background:var(--amber);box-shadow:0 2px 8px rgba(224,122,31,.35)}
+.slider-marks{display:flex;justify-content:space-between;margin-top:6px}
+.slider-marks span{font-size:10px;color:var(--ink-muted)}
+
+/* PILLS */
+.pill-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.pill-group label{font-size:13px;color:var(--ink-soft);font-weight:500;width:100%;margin-bottom:6px}
+.pill{padding:8px 18px;border:1.5px solid var(--border);border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;background:var(--card);color:var(--ink-soft);user-select:none}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.pill.active.blue{background:var(--blue);border-color:var(--blue)}
+.pill.active.amber{background:var(--amber);border-color:var(--amber)}
+
+/* NOTES */
+.note{background:var(--amber-lt);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:4px}
+.note strong{color:var(--amber)}
+.note-green{background:var(--accent-lt);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:4px}
+.note-blue{background:var(--blue-lt);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:4px}
+.note-blue strong{color:var(--blue)}
+.note-purple{background:var(--purple-lt);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:4px}
+
+/* BREAKDOWN TABLE */
+.breakdown{width:100%;border-collapse:collapse;margin-top:8px}
+.breakdown tr{border-bottom:1px solid var(--border)}
+.breakdown tr:last-child{border-bottom:none}
+.breakdown td{padding:11px 4px;font-size:14px;color:var(--ink-soft)}
+.breakdown td:last-child{text-align:right;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);font-weight:500}
+.breakdown .row-total td{padding-top:14px;font-weight:600;color:var(--ink);font-size:15px;border-top:2px solid var(--ink)}
+.breakdown .row-total td:last-child{color:var(--accent);font-size:16px}
+
+/* EURIBOR BADGE */
+.euribor-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-lt);border:1px solid #bee3f8;border-radius:999px;padding:4px 12px;font-size:12px;color:var(--blue);font-weight:600;margin-bottom:16px}
+.euribor-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* TIPO INTERÉS CONDITIONAL */
+.tipo-panel{display:none;margin-top:16px}
+.tipo-panel.visible{display:block}
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:500px){.tipo-grid{grid-template-columns:1fr}}
+
+/* RESULT HERO */
+#result-section{background:var(--ink);border-radius:var(--radius);padding:36px 28px;margin-top:20px;color:#fff;box-shadow:0 8px 32px rgba(26,26,46,.18)}
+.result-eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
+.result-big{font-family:'DM Serif Display',serif;font-size:clamp(36px,7vw,64px);font-weight:400;color:#7ec8a0;line-height:1;margin-bottom:4px}
+.result-sub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:28px}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-top:24px}
+.result-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px}
+.result-item .ri-label{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;letter-spacing:.04em}
+.result-item .ri-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#fff}
+.result-item .ri-pct{font-size:11px;color:#7ec8a0;margin-top:2px}
+.cushion-bar{margin-top:24px;background:rgba(255,255,255,.07);border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.cushion-bar .cb-label{font-size:13px;color:rgba(255,255,255,.55)}
+.cushion-bar .cb-val{font-family:'DM Serif Display',serif;font-size:24px;color:#fff}
+.cushion-bar .cb-note{font-size:11px;color:rgba(255,255,255,.35)}
+
+/* ALERT */
+#tasacion-alert{display:none;background:var(--danger-lt);border:1px solid #f0b8b4;border-radius:10px;padding:14px 18px;margin-top:14px;font-size:13px;color:var(--danger);line-height:1.6}
+
+/* ── SIMULADOR HIPOTECA ── */
+.hipoteca-hero{background:linear-gradient(135deg,#1e3a5f 0%,#1e6091 100%);border-radius:var(--radius);padding:28px;color:#fff;margin-top:20px}
+.hh-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px}
+.hh-big{font-family:'DM Serif Display',serif;font-size:clamp(32px,6vw,52px);color:#90cdf4;line-height:1}
+.hh-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px}
+.hh-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:20px}
+.hh-item{background:rgba(255,255,255,.08);border-radius:10px;padding:12px 14px}
+.hh-item .hhi-l{font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px;letter-spacing:.04em}
+.hh-item .hhi-v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:#fff}
+.hh-item .hhi-s{font-size:10px;color:#90cdf4;margin-top:2px}
+
+/* MIXTO SPLIT */
+.mixto-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+@media(max-width:500px){.mixto-fields{grid-template-columns:1fr}}
+
+/* AMORTIZACIÓN */
+.amort-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.amort-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--shadow)}
+.amort-card .ac-label{font-size:11px;color:var(--ink-muted);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.amort-card .ac-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--ink)}
+.amort-card .ac-sub{font-size:11px;color:var(--ink-muted);margin-top:3px}
+.amort-card.highlight{background:var(--ink);border-color:var(--ink)}
+.amort-card.highlight .ac-label{color:rgba(255,255,255,.4)}
+.amort-card.highlight .ac-val{color:#7ec8a0}
+.amort-card.highlight .ac-sub{color:rgba(255,255,255,.3)}
+
+/* CUADRO TABLE */
+.cuadro-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+.cuadro{width:100%;border-collapse:collapse;font-size:13px}
+.cuadro thead tr{background:var(--ink);color:#fff}
+.cuadro thead th{padding:12px 14px;text-align:right;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.cuadro thead th:first-child{text-align:left}
+.cuadro tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
+.cuadro tbody tr:hover{background:#f0faf4}
+.cuadro tbody tr.year-row{background:#f7f6f2}
+.cuadro tbody tr.year-row td{font-weight:600;color:var(--accent);border-top:2px solid var(--accent-lt)}
+.cuadro tbody td{padding:9px 14px;text-align:right;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:12px}
+.cuadro tbody td:first-child{text-align:left;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);font-weight:500}
+.cuadro tbody td.capital{color:var(--accent)}
+.cuadro tbody td.interes{color:var(--danger)}
+.cuadro tbody td.pendiente{color:var(--ink)}
+.cuadro-controls{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.cuadro-controls select{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--ink);cursor:pointer}
+.cuadro-controls span{font-size:13px;color:var(--ink-muted)}
+.view-toggle{display:flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.view-toggle button{padding:8px 14px;border:none;background:var(--card);font-size:12px;font-weight:500;cursor:pointer;color:var(--ink-soft);transition:all .15s}
+.view-toggle button.active{background:var(--ink);color:#fff}
+
+/* CHART BAR */
+.chart-section{margin-top:20px}
+.chart-title{font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:12px}
+.bar-chart{display:flex;flex-direction:column;gap:6px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{font-size:11px;color:var(--ink-muted);width:48px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:14px;background:var(--border);border-radius:999px;overflow:hidden}
+.bar-fill-cap{height:100%;background:var(--accent);border-radius:999px;transition:width .4s ease}
+.bar-fill-int{height:100%;background:var(--danger);opacity:.7;border-radius:999px;transition:width .4s ease}
+.bar-amt{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ink-muted);width:70px;flex-shrink:0}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .section-card{padding:18px 14px}
+  header{padding:32px 14px 24px}
+  #result-section{padding:24px 16px}
+  .hipoteca-hero{padding:20px 16px}
+  .tab-btn{font-size:10px;padding:12px 4px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Planificador financiero · España & Canarias</div>
+  <h1>¿Cuánto necesito para<br><em>mi hipoteca?</em></h1>
+  <p>Calculadora completa con simulador de hipoteca, tipo de interés fijo, variable y mixto, y cuadro de amortización mes a mes.</p>
+</header>
+
+<!-- NAV TABS -->
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="gastos">💰 Gastos iniciales</button>
+  <button class="tab-btn" data-tab="hipoteca">🏦 Mi hipoteca</button>
+  <button class="tab-btn" data-tab="amortizacion">📊 Amortización</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 1 — GASTOS INICIALES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-gastos">
+<div class="wrapper">
+
+  <!-- ① VIVIENDA -->
+  <div class="section-card">
+    <div class="section-label">
+      <div class="section-num">1</div>
+      <div class="section-title">La vivienda</div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-header">
+        <label>Precio de venta</label>
+        <span class="slider-value" id="val-precio">150.000 €</span>
+      </div>
+      <input type="range" id="sl-precio" min="50000" max="800000" step="5000" value="150000">
+      <div class="slider-marks"><span>50k</span><span>200k</span><span>400k</span><span>600k</span><span>800k</span></div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-header">
+        <label>Valor de tasación</label>
+        <span class="slider-value" id="val-tasacion">150.000 €</span>
+      </div>
+      <input type="range" id="sl-tasacion" min="50000" max="800000" step="5000" value="150000">
+      <div class="slider-marks"><span>50k</span><span>200k</span><span>400k</span><span>600k</span><span>800k</span></div>
+    </div>
+
+    <div id="tasacion-alert">
+      ⚠️ <strong>Atención:</strong> La tasación es inferior al precio de venta. El banco prestará el 80% de <span id="alert-tasval"></span>. Tendrás que cubrir la diferencia de <span id="alert-diff"></span> adicionales de tu bolsillo.
+    </div>
+
+    <div class="note-green" style="margin-top:16px">
+      El banco financia como máximo el <strong>80% del valor más bajo</strong> entre precio de venta y tasación. El 20% restante —y cualquier diferencia entre ambos— lo pones tú.
+    </div>
+  </div>
+
+  <!-- ② UBICACIÓN -->
+  <div class="section-card">
+    <div class="section-label">
+      <div class="section-num">2</div>
+      <div class="section-title">Ubicación y tipo de vivienda</div>
+    </div>
+    <div class="pill-group" id="pg-zona">
+      <label>¿Dónde está la vivienda?</label>
+      <div class="pill active" data-val="peninsula">🏙️ Península</div>
+      <div class="pill" data-val="canarias">🌴 Islas Canarias</div>
+    </div>
+    <div class="pill-group" id="pg-tipo">
+      <label>Estado de la vivienda</label>
+      <div class="pill active" data-val="nueva">🏗️ Obra nueva</div>
+      <div class="pill" data-val="segunda">🔑 Segunda mano</div>
+    </div>
+    <div class="pill-group" id="pg-perfil">
+      <label>Perfil del comprador</label>
+      <div class="pill active" data-val="general">👤 General</div>
+      <div class="pill" data-val="joven">🧑 Menor de 35 años</div>
+    </div>
+    <div id="impuesto-info" class="note" style="margin-top:4px"></div>
+  </div>
+
+  <!-- ③ DESGLOSE -->
+  <div class="section-card">
+    <div class="section-label">
+      <div class="section-num">3</div>
+      <div class="section-title">Desglose de todos los gastos</div>
+    </div>
+    <table class="breakdown">
+      <tr><td>💵 Entrada (<span id="bd-pct-label">20%</span> del valor de referencia)</td><td id="bd-entrada">—</td></tr>
+      <tr id="bd-row-diff" style="display:none"><td>⚠️ Extra por diferencia tasación/venta</td><td id="bd-diff">—</td></tr>
+      <tr><td id="bd-imp-label">🧾 Impuesto</td><td id="bd-impuesto">—</td></tr>
+      <tr id="bd-row-ajd"><td>📄 AJD (Actos Jurídicos Documentados)</td><td id="bd-ajd">—</td></tr>
+      <tr><td>📝 Notaría + Registro + Gestoría</td><td>~1.800 €</td></tr>
+      <tr><td>🔍 Tasación oficial</td><td>~450 €</td></tr>
+      <tr class="row-total"><td>TOTAL necesario ahorrado</td><td id="bd-total">—</td></tr>
+    </table>
+    <div class="note" style="margin-top:16px"><strong>Notaría, registro y tasación</strong> son estimaciones medias y pueden variar.</div>
+  </div>
+
+  <!-- ④ RESULTADO -->
+  <div id="result-section">
+    <div class="result-eyebrow">Tu objetivo de ahorro</div>
+    <div class="result-big" id="res-total">—</div>
+    <div class="result-sub" id="res-pct-label">—</div>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="ri-label">Entrada mínima</div>
+        <div class="ri-val" id="res-entrada">—</div>
+        <div class="ri-pct" id="res-entrada-pct">% del valor ref.</div>
+      </div>
+      <div class="result-item">
+        <div class="ri-label">Impuestos totales</div>
+        <div class="ri-val" id="res-imp">—</div>
+        <div class="ri-pct" id="res-imp-tipo">—</div>
+      </div>
+      <div class="result-item">
+        <div class="ri-label">Hipoteca (banco financia)</div>
+        <div class="ri-val" id="res-prestamo">—</div>
+        <div class="ri-pct" id="res-prestamo-pct">% del valor ref.</div>
+      </div>
+      <div class="result-item">
+        <div class="ri-label">Cuota mensual estimada</div>
+        <div class="ri-val" id="res-cuota">—</div>
+        <div class="ri-pct">Ver pestaña Hipoteca →</div>
+      </div>
+    </div>
+    <div class="cushion-bar">
+      <div>
+        <div class="cb-label">Con colchón de seguridad (+10%)</div>
+        <div class="cb-note">Lo recomendable para imprevistos</div>
+      </div>
+      <div class="cb-val" id="res-colchon">—</div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /tab-gastos -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 2 — SIMULADOR HIPOTECA -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-hipoteca">
+<div class="wrapper">
+
+  <!-- IMPORTE Y PLAZO -->
+  <div class="section-card">
+    <div class="section-label">
+      <div class="section-num">1</div>
+      <div class="section-title">Importe y plazo de la hipoteca</div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-header">
+        <label>% que financia el banco</label>
+        <span class="slider-value blue" id="val-ltv">80%</span>
+      </div>
+      <input type="range" id="sl-ltv" class="blue-thumb" min="50" max="100" step="5" value="80">
+      <div class="slider-marks"><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span></div>
+    </div>
+    <div class="note-blue" style="margin-bottom:18px" id="ltv-note">
+      El banco financia el <strong id="ltv-note-pct">80%</strong> del valor de referencia → préstamo de <strong id="ltv-note-importe">—</strong>. Necesitas <strong id="ltv-note-entrada">—</strong> de entrada.
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-header">
+        <label>Plazo de amortización</label>
+        <span class="slider-value blue" id="val-plazo">30 años</span>
+      </div>
+      <input type="range" id="sl-plazo" class="blue-thumb" min="5" max="40" step="1" value="30">
+      <div class="slider-marks"><span>5a</span><span>10a</span><span>20a</span><span>30a</span><span>40a</span></div>
+    </div>
+  </div>
+
+  <!-- TIPO DE INTERÉS -->
+  <div class="section-card">
+    <div class="section-label">
+      <div class="section-num">2</div>
+      <div class="section-title">Tipo de interés</div>
+    </div>
+
+    <div class="pill-group" id="pg-modalidad">
+      <label>Modalidad de la hipoteca</label>
+      <div class="pill active" data-val="fijo">📌 Fijo</div>
+      <div class="pill" data-val="variable">📈 Variable (Euríbor)</div>
+      <div class="pill" data-val="mixto">🔀 Mixto</div>
+    </div>
+
+    <!-- FIJO -->
+    <div class="tipo-panel visible" id="panel-fijo">
+      <div class="slider-group">
+        <div class="slider-header">
+          <label>Tipo de interés fijo anual</label>
+          <span class="slider-value" id="val-tae-fijo">3,50%</span>
+        </div>
+        <input type="range" id="sl-tae-fijo" min="1" max="8" step="0.05" value="3.5">
+        <div class="slider-marks"><span>1%</span><span>2%</span><span>3%</span><span>5%</span><span>6%</span><span>8%</span></div>
+      </div>
+    </div>
+
+    <!-- VARIABLE -->
+    <div class="tipo-panel" id="panel-variable">
+      <div id="euribor-badge-wrap">
+        <div class="euribor-badge">
+          <span class="euribor-dot"></span>
+          Euríbor 12 meses (dato incorporado): <strong id="euribor-display">2,50%</strong>
+        </div>
+      </div>
+      <div class="note-blue" style="margin-bottom:16px">
+        <strong>Hipoteca variable = Euríbor + diferencial.</strong> El Euríbor se revisa cada 6 o 12 meses. Este simulador usa el valor actual como referencia.
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <label>Diferencial del banco (spread)</label>
+          <span class="slider-value" id="val-spread">+ 0,80%</span>
+        </div>
+        <input type="range" id="sl-spread" min="0.1" max="3" step="0.05" value="0.8">
+        <div class="slider-marks"><span>0,1%</span><span>0,5%</span><span>1%</span><span>2%</span><span>3%</span></div>
+      </div>
+      <div class="note" id="variable-total-note">
+        Tipo total actual: Euríbor + diferencial = <strong id="variable-total">—</strong>
+      </div>
+    </div>
+
+    <!-- MIXTO -->
+    <div class="tipo-panel" id="panel-mixto">
+      <div class="note-purple" style="margin-bottom:16px">
+        <strong>Hipoteca mixta:</strong> los primeros años a tipo fijo, el resto a tipo variable (Euríbor + diferencial).
+      </div>
+      <div class="mixto-fields">
+        <div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <label>Años a tipo fijo</label>
+              <span class="slider-value amber" id="val-mixto-anos">10 años</span>
+            </div>
+            <input type="range" id="sl-mixto-anos" class="amber-thumb" min="1" max="20" step="1" value="10">
+            <div class="slider-marks"><span>1a</span><span>5a</span><span>10a</span><span>15a</span><span>20a</span></div>
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <label>Tipo fijo inicial</label>
+              <span class="slider-value amber" id="val-mixto-fijo">2,50%</span>
+            </div>
+            <input type="range" id="sl-mixto-fijo" class="amber-thumb" min="1" max="6" step="0.05" value="2.5">
+            <div class="slider-marks"><span>1%</span><span>2%</span><span>4%</span><span>6%</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <label>Diferencial variable</label>
+              <span class="slider-value" id="val-mixto-spread">+ 0,70%</span>
+            </div>
+            <input type="range" id="sl-mixto-spread" min="0.1" max="3" step="0.05" value="0.7">
+            <div class="slider-marks"><span>0,1%</span><span>1%</span><span>2%</span><span>3%</span></div>
+          </div>
+          <div class="note-blue" style="margin-top:4px;font-size:12px">
+            Fase variable: Euríbor <strong id="euribor-mixto">2,50%</strong> + diferencial = <strong id="mixto-variable-total">—</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO RESULTADO HIPOTECA -->
+  <div class="hipoteca-hero">
+    <div class="hh-label">Cuota mensual estimada</div>
+    <div class="hh-big" id="hh-cuota">— €/mes</div>
+    <div class="hh-sub" id="hh-cuota-sub">—</div>
+    <div class="hh-grid">
+      <div class="hh-item">
+        <div class="hhi-l">Capital prestado</div>
+        <div class="hhi-v" id="hh-capital">—</div>
+        <div class="hhi-s" id="hh-ltv-pct">—% del valor ref.</div>
+      </div>
+      <div class="hh-item">
+        <div class="hhi-l">Tipo interés aplicado</div>
+        <div class="hhi-v" id="hh-tipo">—</div>
+        <div class="hhi-s" id="hh-modalidad">—</div>
+      </div>
+      <div class="hh-item">
+        <div class="hhi-l">Plazo</div>
+        <div class="hhi-v" id="hh-plazo">—</div>
+        <div class="hhi-s" id="hh-meses">— cuotas</div>
+      </div>
+      <div class="hh-item">
+        <div class="hhi-l">Total intereses pagados</div>
+        <div class="hhi-v" id="hh-total-int">—</div>
+        <div class="hhi-s" id="hh-int-pct">—% del capital</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESFUERZO FINANCIERO -->
+  <div class="section-card" style="margin-top:20px">
+    <div class="section-label">
+      <div class="section-num">3</div>
+      <div class="section-title">Esfuerzo financiero recomendado</div>
+    </div>
+    <div class="slider-group">
+      <div class="slider-header">
+        <label>Tus ingresos netos mensuales</label>
+        <span class="slider-value" id="val-ingresos">2.000 €</span>
+      </div>
+      <input type="range" id="sl-ingresos" min="500" max="8000" step="100" value="2000">
+      <div class="slider-marks"><span>500€</span><span>2.000€</span><span>4.000€</span><span>6.000€</span><span>8.000€</span></div>
+    </div>
+    <div id="esfuerzo-result" class="note-green" style="margin-top:4px"></div>
+  </div>
+
+</div>
+</div><!-- /tab-hipoteca -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 3 — CUADRO DE AMORTIZACIÓN -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-amortizacion">
+<div class="wrapper" style="padding-top:20px">
+
+  <!-- RESUMEN -->
+  <div class="amort-summary" id="amort-summary">
+    <div class="amort-card highlight">
+      <div class="ac-label">Capital prestado</div>
+      <div class="ac-val" id="am-capital">—</div>
+      <div class="ac-sub" id="am-capital-sub">—</div>
+    </div>
+    <div class="amort-card">
+      <div class="ac-label">Cuota mensual</div>
+      <div class="ac-val" id="am-cuota">—</div>
+      <div class="ac-sub" id="am-cuota-sub">—</div>
+    </div>
+    <div class="amort-card">
+      <div class="ac-label">Total intereses</div>
+      <div class="ac-val" id="am-intereses">—</div>
+      <div class="ac-sub" id="am-int-sub">—% del capital</div>
+    </div>
+    <div class="amort-card">
+      <div class="ac-label">Total pagado</div>
+      <div class="ac-val" id="am-total">—</div>
+      <div class="ac-sub" id="am-total-sub">capital + intereses</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO AÑOS -->
+  <div class="section-card chart-section">
+    <div class="chart-title">Capital amortizado vs Intereses pagados por año</div>
+    <div class="bar-chart" id="bar-chart"></div>
+    <div style="display:flex;gap:20px;margin-top:14px;font-size:12px;color:var(--ink-muted)">
+      <span><span style="display:inline-block;width:12px;height:12px;background:var(--accent);border-radius:2px;margin-right:5px;vertical-align:middle"></span>Capital</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:var(--danger);opacity:.7;border-radius:2px;margin-right:5px;vertical-align:middle"></span>Intereses</span>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="section-card" style="padding:24px 20px">
+    <div class="cuadro-controls">
+      <div class="view-toggle">
+        <button class="active" id="btn-mensual" onclick="setCuadroView('mensual')">Mensual</button>
+        <button id="btn-anual" onclick="setCuadroView('anual')">Anual</button>
+      </div>
+      <select id="sel-year" style="display:none"></select>
+      <span id="cuadro-info" style="font-size:12px;color:var(--ink-muted)"></span>
+    </div>
+    <div class="cuadro-wrap">
+      <table class="cuadro">
+        <thead>
+          <tr>
+            <th style="text-align:left">Período</th>
+            <th>Cuota</th>
+            <th>Capital</th>
+            <th>Intereses</th>
+            <th>Capital pendiente</th>
+          </tr>
+        </thead>
+        <tbody id="cuadro-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div><!-- /tab-amortizacion -->
+
+<script>
+// ═══════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════
+const EURIBOR = 2.50; // % — valor de referencia actualizado
+
+const S = {
+  // Vivienda
+  precio:    150000,
+  tasacion:  150000,
+  zona:     'peninsula',
+  tipo:     'nueva',
+  perfil:   'general',
+  // Hipoteca
+  ltv:      80,
+  plazo:    30,
+  modalidad:'fijo',
+  taeFijo:  3.50,
+  spread:   0.80,
+  mixtoAnos:10,
+  mixtoFijo:2.50,
+  mixtoSpread:0.70,
+  ingresos: 2000,
+};
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+const fmt  = n => n.toLocaleString('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+const fmt2 = n => n.toLocaleString('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtP = n => n.toFixed(2).replace('.',',') + '%';
+
+function trackSlider(id, val, min, max, color='#2d6a4f'){
+  const pct = ((val-min)/(max-min))*100;
+  document.getElementById(id).style.background =
+    `linear-gradient(to right,${color} ${pct}%,#e4e2dc ${pct}%)`;
+}
+
+// ═══════════════════════════════════════════════════
+// IMPUESTOS
+// ═══════════════════════════════════════════════════
+function getImpuesto(){
+  const {zona,tipo,perfil} = S;
+  if(zona==='canarias'){
+    const pct=0.065;
+    return {pct, ajd:0,
+      label: tipo==='nueva'?'IGIC (6,5%)':'ITP Canarias (6,5%)',
+      info: tipo==='nueva'
+        ? '🌴 En Canarias se aplica <strong>IGIC al 6,5%</strong> en lugar de IVA.'
+        : '🌴 En Canarias la segunda mano tributa por <strong>ITP al 6,5%</strong>. Sin AJD.'};
+  }
+  if(tipo==='nueva'){
+    const ajd = perfil==='joven'?0.005:0.012;
+    return {pct:0.10, ajd,
+      label:'IVA (10%) + AJD',
+      info:`🏙️ Vivienda nueva: <strong>IVA al 10%</strong> + AJD (~${perfil==='joven'?'0,5':'1,2'}% según CCAA).`};
+  }
+  const pct = perfil==='joven'?0.06:0.08;
+  return {pct, ajd:0,
+    label:`ITP (${(pct*100).toFixed(0)}%)`,
+    info: perfil==='joven'
+      ? '🏙️ Segunda mano, joven: <strong>ITP reducido ~6%</strong> en muchas CCAA.'
+      : '🏙️ Segunda mano: <strong>ITP entre 6% y 10%</strong> según CCAA (media 8%).'};
+}
+
+// ═══════════════════════════════════════════════════
+// TIPO DE INTERÉS EFECTIVO
+// ═══════════════════════════════════════════════════
+function getTipoAnual(){
+  switch(S.modalidad){
+    case 'fijo':    return S.taeFijo;
+    case 'variable': return EURIBOR + S.spread;
+    case 'mixto':   return S.mixtoFijo; // fase inicial (para cuota base)
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// CÁLCULO CUOTA FRANCESA
+// ═══════════════════════════════════════════════════
+function cuotaMensual(capital, tasaAnual, meses){
+  if(tasaAnual===0) return capital/meses;
+  const r = tasaAnual/100/12;
+  return capital * (r * Math.pow(1+r,meses)) / (Math.pow(1+r,meses)-1);
+}
+
+// ═══════════════════════════════════════════════════
+// CUADRO DE AMORTIZACIÓN COMPLETO
+// ═══════════════════════════════════════════════════
+function generarCuadro(capital, tasaAnual, meses, mixtoAnos, mixtoTasaVar){
+  const rows = [];
+  let pendiente = capital;
+  const esMixto = S.modalidad==='mixto';
+  const mesesFijos = esMixto ? mixtoAnos*12 : meses;
+
+  for(let m=1; m<=meses; m++){
+    const enFase = esMixto && m > mesesFijos;
+    const tasa   = enFase ? mixtoTasaVar : tasaAnual;
+    const r      = tasa/100/12;
+    const cuota  = cuotaMensual(pendiente, tasa, meses-m+1);
+    const interes = pendiente * r;
+    const capAmort = cuota - interes;
+    pendiente = Math.max(0, pendiente - capAmort);
+    rows.push({mes:m, cuota, interes, capAmort, pendiente,
+               fase: esMixto?(m<=mesesFijos?'fijo':'variable'):'fijo'});
+  }
+  return rows;
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER PRINCIPAL
+// ═══════════════════════════════════════════════════
+function render(){
+  const {precio, tasacion, ltv, plazo} = S;
+  const refVal   = Math.min(precio, tasacion);
+  const prestamo = refVal * ltv/100;
+  const entrada  = refVal - prestamo;
+  const diffTas  = precio>tasacion ? precio-tasacion : 0;
+  const entradaTotal = entrada + diffTas;
+
+  const imp = getImpuesto();
+  const impImporte = precio * imp.pct;
+  const ajdImporte = precio * imp.ajd;
+  const notaria = 1800, tasCoste = 450;
+  const total   = entradaTotal + impImporte + ajdImporte + notaria + tasCoste;
+  const colchon = total * 1.10;
+
+  const tipoAnual = getTipoAnual();
+  const meses     = plazo * 12;
+  const cuota     = cuotaMensual(prestamo, tipoAnual, meses);
+  const totalPagado = cuota * meses;
+  const totalInt  = totalPagado - prestamo;
+
+  // ── TAB 1 ─────────────────────────────────────────
+  document.getElementById('val-precio').textContent   = fmt(precio);
+  document.getElementById('val-tasacion').textContent = fmt(tasacion);
+  trackSlider('sl-precio',   precio,   50000,800000);
+  trackSlider('sl-tasacion', tasacion, 50000,800000);
+
+  const alertEl = document.getElementById('tasacion-alert');
+  if(diffTas>0){
+    alertEl.style.display='block';
+    document.getElementById('alert-tasval').textContent = fmt(tasacion);
+    document.getElementById('alert-diff').textContent   = fmt(diffTas);
+  } else alertEl.style.display='none';
+
+  document.getElementById('impuesto-info').innerHTML = imp.info;
+  document.getElementById('bd-pct-label').textContent = ltv<80?'entrada ajustada':ltv+'%';
+  document.getElementById('bd-entrada').textContent   = fmt(entrada);
+  document.getElementById('bd-impuesto').textContent  = fmt(impImporte);
+  document.getElementById('bd-imp-label').textContent = '🧾 '+imp.label.split(' +')[0];
+
+  const rowDiff = document.getElementById('bd-row-diff');
+  rowDiff.style.display = diffTas>0?'':'none';
+  if(diffTas>0) document.getElementById('bd-diff').textContent = fmt(diffTas);
+
+  const rowAjd = document.getElementById('bd-row-ajd');
+  rowAjd.style.display = ajdImporte>0?'':'none';
+  if(ajdImporte>0) document.getElementById('bd-ajd').textContent = fmt(ajdImporte);
+
+  document.getElementById('bd-total').textContent     = fmt(total);
+  document.getElementById('res-total').textContent    = fmt(total);
+  document.getElementById('res-pct-label').textContent= 'aprox. '+(total/precio*100).toFixed(1)+'% del precio de venta';
+  document.getElementById('res-entrada').textContent  = fmt(entradaTotal);
+  document.getElementById('res-entrada-pct').textContent = (entradaTotal/refVal*100).toFixed(0)+'% del valor ref.';
+  document.getElementById('res-imp').textContent      = fmt(impImporte+ajdImporte);
+  document.getElementById('res-imp-tipo').textContent = imp.label;
+  document.getElementById('res-prestamo').textContent = fmt(prestamo);
+  document.getElementById('res-prestamo-pct').textContent = ltv+'% del valor ref.';
+  document.getElementById('res-cuota').textContent    = fmt(Math.round(cuota));
+  document.getElementById('res-colchon').textContent  = fmt(colchon);
+
+  // ── TAB 2 ─────────────────────────────────────────
+  document.getElementById('val-ltv').textContent   = ltv+'%';
+  document.getElementById('val-plazo').textContent = plazo+' años';
+  trackSlider('sl-ltv',   ltv,   50,100,'#1e6091');
+  trackSlider('sl-plazo', plazo,  5, 40,'#1e6091');
+
+  document.getElementById('ltv-note-pct').textContent     = ltv+'%';
+  document.getElementById('ltv-note-importe').textContent = fmt(prestamo);
+  document.getElementById('ltv-note-entrada').textContent = fmt(entrada);
+
+  // Tipo interés
+  document.getElementById('val-tae-fijo').textContent   = S.taeFijo.toFixed(2).replace('.',',')+' %';
+  document.getElementById('val-spread').textContent     = '+ '+S.spread.toFixed(2).replace('.',',')+' %';
+  document.getElementById('val-mixto-anos').textContent = S.mixtoAnos+' años';
+  document.getElementById('val-mixto-fijo').textContent = S.mixtoFijo.toFixed(2).replace('.',',')+' %';
+  document.getElementById('val-mixto-spread').textContent = '+ '+S.mixtoSpread.toFixed(2).replace('.',',')+' %';
+  document.getElementById('val-ingresos').textContent   = fmt(S.ingresos);
+  document.getElementById('euribor-display').textContent = EURIBOR.toFixed(2).replace('.',',')+' %';
+  document.getElementById('euribor-mixto').textContent   = EURIBOR.toFixed(2).replace('.',',')+' %';
+  document.getElementById('variable-total').textContent  = (EURIBOR+S.spread).toFixed(2).replace('.',',')+' %';
+  document.getElementById('mixto-variable-total').textContent = (EURIBOR+S.mixtoSpread).toFixed(2).replace('.',',')+' %';
+
+  trackSlider('sl-tae-fijo',    S.taeFijo,      1,   8);
+  trackSlider('sl-spread',      S.spread,       0.1, 3);
+  trackSlider('sl-mixto-anos',  S.mixtoAnos,    1,  20,'#e07a1f');
+  trackSlider('sl-mixto-fijo',  S.mixtoFijo,    1,   6,'#e07a1f');
+  trackSlider('sl-mixto-spread',S.mixtoSpread,  0.1, 3);
+  trackSlider('sl-ingresos',    S.ingresos,   500,8000);
+
+  // Esfuerzo
+  const pctEsfuerzo = cuota/S.ingresos*100;
+  const esfEl = document.getElementById('esfuerzo-result');
+  const emoji = pctEsfuerzo<=30?'✅':pctEsfuerzo<=35?'⚠️':'❌';
+  const msg   = pctEsfuerzo<=30?'dentro del límite recomendado (≤30%)':pctEsfuerzo<=35?'en zona de precaución (30-35%)':'por encima del límite seguro (>35%)';
+  esfEl.innerHTML = `${emoji} Tu cuota representa el <strong>${pctEsfuerzo.toFixed(1)}%</strong> de tus ingresos — <strong>${msg}</strong>.<br>Para una cuota del 30% tus ingresos mínimos deberían ser <strong>${fmt(Math.ceil(cuota/0.30))}/mes</strong>.`;
+  esfEl.className = pctEsfuerzo<=30?'note-green':pctEsfuerzo<=35?'note':'note';
+  if(pctEsfuerzo>30) esfEl.style.borderLeftColor=pctEsfuerzo>35?'var(--danger)':'var(--amber)';
+
+  // Hero hipoteca
+  let tipoLabel, subLabel;
+  switch(S.modalidad){
+    case 'fijo':
+      tipoLabel=fmtP(S.taeFijo)+' TIN'; subLabel='Hipoteca fija — cuota constante toda la vida'; break;
+    case 'variable':
+      tipoLabel=fmtP(EURIBOR+S.spread)+' (hoy)'; subLabel=`Euríbor ${fmtP(EURIBOR)} + ${fmtP(S.spread)} diferencial`; break;
+    case 'mixto':
+      tipoLabel=fmtP(S.mixtoFijo)+' → '+fmtP(EURIBOR+S.mixtoSpread);
+      subLabel=`${S.mixtoAnos}a fijo, después variable`; break;
+  }
+  document.getElementById('hh-cuota').textContent  = fmt2(cuota)+' / mes';
+  document.getElementById('hh-cuota-sub').textContent = subLabel;
+  document.getElementById('hh-capital').textContent = fmt(prestamo);
+  document.getElementById('hh-ltv-pct').textContent = ltv+'% del valor ref.';
+  document.getElementById('hh-tipo').textContent    = tipoLabel;
+  document.getElementById('hh-modalidad').textContent = S.modalidad.charAt(0).toUpperCase()+S.modalidad.slice(1);
+  document.getElementById('hh-plazo').textContent   = plazo+' años';
+  document.getElementById('hh-meses').textContent   = meses+' cuotas';
+  document.getElementById('hh-total-int').textContent = fmt(Math.round(totalInt));
+  document.getElementById('hh-int-pct').textContent = (totalInt/prestamo*100).toFixed(1)+'% del capital';
+
+  // ── TAB 3 ─────────────────────────────────────────
+  const tasaVar = S.modalidad==='mixto' ? EURIBOR+S.mixtoSpread : tipoAnual;
+  const cuadro  = generarCuadro(prestamo, tipoAnual, meses, S.mixtoAnos, tasaVar);
+  const totInt2 = cuadro.reduce((a,r)=>a+r.interes,0);
+  const totPag2 = cuadro.reduce((a,r)=>a+r.cuota,0);
+
+  document.getElementById('am-capital').textContent   = fmt(prestamo);
+  document.getElementById('am-capital-sub').textContent = ltv+'% del valor referencia';
+  document.getElementById('am-cuota').textContent     = fmt2(cuota);
+  document.getElementById('am-cuota-sub').textContent = tipoLabel;
+  document.getElementById('am-intereses').textContent = fmt(Math.round(totInt2));
+  document.getElementById('am-int-sub').textContent   = (totInt2/prestamo*100).toFixed(1)+'% del capital';
+  document.getElementById('am-total').textContent     = fmt(Math.round(totPag2));
+
+  renderBarChart(cuadro);
+  renderCuadro(cuadro);
+  populateYearSelect(cuadro, plazo);
+}
+
+// ═══════════════════════════════════════════════════
+// BAR CHART
+// ═══════════════════════════════════════════════════
+function renderBarChart(cuadro){
+  const plazo = S.plazo;
+  const mesesTotal = plazo*12;
+  // Agrupar por año
+  const anos = [];
+  for(let y=1;y<=plazo;y++){
+    const rows = cuadro.filter(r=>r.mes>(y-1)*12 && r.mes<=y*12);
+    const cap  = rows.reduce((a,r)=>a+r.capAmort,0);
+    const inte = rows.reduce((a,r)=>a+r.interes,0);
+    anos.push({y, cap, inte});
+  }
+  const maxVal = Math.max(...anos.map(a=>a.cap+a.inte));
+  const container = document.getElementById('bar-chart');
+  container.innerHTML='';
+  // Mostrar max 30 años; si más, agrupar de 5 en 5
+  const items = plazo<=30 ? anos : anos.filter((_,i)=>i%5===0||i===plazo-1);
+  items.forEach(a=>{
+    const capPct = (a.cap/maxVal*100).toFixed(1);
+    const intPct = (a.inte/maxVal*100).toFixed(1);
+    const row = document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML=`
+      <span class="bar-label">${a.y<10?'Año 0'+a.y:'Año '+a.y}</span>
+      <div class="bar-track" style="position:relative">
+        <div style="position:absolute;top:0;left:0;width:${capPct}%;height:100%;background:var(--accent);border-radius:999px"></div>
+        <div style="position:absolute;top:0;left:${capPct}%;width:${intPct}%;height:100%;background:var(--danger);opacity:.7;border-radius:0 999px 999px 0"></div>
+      </div>
+      <span class="bar-amt">${fmt(Math.round(a.cap+a.inte))}</span>`;
+    container.appendChild(row);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CUADRO TABLA
+// ═══════════════════════════════════════════════════
+let cuadroView = 'mensual';
+let cuadroData = [];
+
+function setCuadroView(v){
+  cuadroView = v;
+  document.getElementById('btn-mensual').classList.toggle('active',v==='mensual');
+  document.getElementById('btn-anual').classList.toggle('active',v==='anual');
+  document.getElementById('sel-year').style.display = v==='mensual'?'inline-block':'none';
+  renderCuadroTable();
+}
+
+function populateYearSelect(cuadro, plazo){
+  cuadroData = cuadro;
+  const sel = document.getElementById('sel-year');
+  const prev = sel.value;
+  sel.innerHTML='';
+  for(let y=1;y<=plazo;y++){
+    const opt=document.createElement('option');
+    opt.value=y; opt.textContent='Año '+y;
+    sel.appendChild(opt);
+  }
+  if(prev && prev<=plazo) sel.value=prev;
+  renderCuadroTable();
+}
+
+function renderCuadroTable(){
+  const tbody = document.getElementById('cuadro-tbody');
+  tbody.innerHTML='';
+  const info = document.getElementById('cuadro-info');
+
+  if(cuadroView==='anual'){
+    // Resumen anual
+    const plazo = S.plazo;
+    let rows = [];
+    for(let y=1;y<=plazo;y++){
+      const ym = cuadroData.filter(r=>r.mes>(y-1)*12 && r.mes<=y*12);
+      if(!ym.length) continue;
+      const cap  = ym.reduce((a,r)=>a+r.capAmort,0);
+      const inte = ym.reduce((a,r)=>a+r.interes,0);
+      const cuot = ym.reduce((a,r)=>a+r.cuota,0);
+      const pend = ym[ym.length-1].pendiente;
+      rows.push({label:'Año '+y, cuot, cap, inte, pend});
+    }
+    info.textContent = plazo+' filas (resumen anual)';
+    rows.forEach(r=>{
+      const tr=document.createElement('tr');
+      tr.className='year-row';
+      tr.innerHTML=`<td>${r.label}</td><td>${fmt2(r.cuot)}</td><td class="capital">${fmt2(r.cap)}</td><td class="interes">${fmt2(r.inte)}</td><td class="pendiente">${fmt2(r.pend)}</td>`;
+      tbody.appendChild(tr);
+    });
+  } else {
+    // Mensual — filtrar por año seleccionado
+    const yr = parseInt(document.getElementById('sel-year').value)||1;
+    const rows = cuadroData.filter(r=>r.mes>(yr-1)*12 && r.mes<=yr*12);
+    info.textContent = rows.length+' cuotas del año '+yr;
+    rows.forEach(r=>{
+      const tr=document.createElement('tr');
+      const faseBadge = S.modalidad==='mixto'?` <span style="font-size:10px;opacity:.6">(${r.fase})</span>`:'';
+      tr.innerHTML=`<td>Mes ${r.mes}${faseBadge}</td><td>${fmt2(r.cuota)}</td><td class="capital">${fmt2(r.capAmort)}</td><td class="interes">${fmt2(r.interes)}</td><td class="pendiente">${fmt2(r.pendiente)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+
+function renderCuadro(cuadro){
+  cuadroData = cuadro;
+  renderCuadroTable();
+}
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    render();
+  });
+});
+
+// ═══════════════════════════════════════════════════
+// PILLS
+// ═══════════════════════════════════════════════════
+function setupPills(groupId, stateKey){
+  document.getElementById(groupId).querySelectorAll('.pill').forEach(pill=>{
+    pill.addEventListener('click',()=>{
+      document.getElementById(groupId).querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active');
+      S[stateKey]=pill.dataset.val;
+      if(stateKey==='modalidad') updateModalidadPanels();
+      render();
+    });
+  });
+}
+setupPills('pg-zona',      'zona');
+setupPills('pg-tipo',      'tipo');
+setupPills('pg-perfil',    'perfil');
+setupPills('pg-modalidad', 'modalidad');
+
+function updateModalidadPanels(){
+  ['fijo','variable','mixto'].forEach(m=>{
+    const p=document.getElementById('panel-'+m);
+    p.classList.toggle('visible', S.modalidad===m);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// SLIDERS
+// ═══════════════════════════════════════════════════
+const sliders = [
+  ['sl-precio',      'precio',      50000,800000],
+  ['sl-tasacion',    'tasacion',    50000,800000],
+  ['sl-ltv',         'ltv',         50,  100],
+  ['sl-plazo',       'plazo',       5,   40],
+  ['sl-tae-fijo',    'taeFijo',     1,   8],
+  ['sl-spread',      'spread',      0.1, 3],
+  ['sl-mixto-anos',  'mixtoAnos',   1,   20],
+  ['sl-mixto-fijo',  'mixtoFijo',   1,   6],
+  ['sl-mixto-spread','mixtoSpread', 0.1, 3],
+  ['sl-ingresos',    'ingresos',    500, 8000],
+];
+sliders.forEach(([id, key])=>{
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input',e=>{
+    S[key]=parseFloat(e.target.value);
+    render();
+  });
+});
+
+document.getElementById('sel-year').addEventListener('change', renderCuadroTable);
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
